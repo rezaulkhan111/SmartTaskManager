@@ -1,4 +1,4 @@
-package com.machinecode.smarttaskmanager.ui.screens
+package com.machinecode.smarttaskmanager.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
@@ -22,24 +22,5 @@ fun TopBarWithSortMenu(
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(sortOptions.first()) }
 
-    TopAppBar(title = { Text(title) }, actions = {
-        Box {
-            IconButton(onClick = { expanded = true }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
-                    contentDescription = "Sort"
-                )
-            }
-            DropdownMenu(
-                expanded = expanded, onDismissRequest = { expanded = false }) {
-                sortOptions.forEach { option ->
-                    DropdownMenuItem(text = { Text(option) }, onClick = {
-                        selectedOption = option
-                        onSortSelected(option)
-                        expanded = false
-                    })
-                }
-            }
-        }
-    })
+
 }

@@ -1,4 +1,4 @@
-package com.machinecode.smarttaskmanager.ui.theme
+package com.machinecode.smarttaskmanager.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

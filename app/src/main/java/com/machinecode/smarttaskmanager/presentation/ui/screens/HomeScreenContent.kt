@@ -1,4 +1,4 @@
-package com.machinecode.smarttaskmanager.ui.screens
+package com.machinecode.smarttaskmanager.presentation.ui.screens
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.machinecode.smarttaskmanager.ui.components
+package com.machinecode.smarttaskmanager.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

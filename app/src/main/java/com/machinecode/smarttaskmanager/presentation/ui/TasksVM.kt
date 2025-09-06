@@ -1,4 +1,4 @@
-package com.machinecode.smarttaskmanager.ui
+package com.machinecode.smarttaskmanager.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
