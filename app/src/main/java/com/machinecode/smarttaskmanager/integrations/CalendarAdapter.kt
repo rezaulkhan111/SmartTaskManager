@@ -1,11 +1,11 @@
 package com.machinecode.smarttaskmanager.integrations
 
 import android.os.Build
-import com.machinecode.smarttaskmanager.domain.Task
+import com.machinecode.smarttaskmanager.domain.TaskDTO
 import java.time.ZoneId
 
 interface CalendarClient {
-    fun addEventFromTask(task: Task)
+    fun addEventFromTask(task: TaskDTO)
 }
 
 // Imagine these are third‑party SDK models
@@ -14,7 +14,7 @@ class OutlookItem(val subject: String, val timestamp: Long)
 
 // Concrete adapters
 class GoogleCalendarAdapter : CalendarClient {
-    override fun addEventFromTask(task: Task) {
+    override fun addEventFromTask(task: TaskDTO) {
         val millis = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             task.due?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
                 ?: System.currentTimeMillis()
@@ -34,7 +34,7 @@ class GoogleCalendarAdapter : CalendarClient {
 
 
 class OutlookCalendarAdapter : CalendarClient {
-    override fun addEventFromTask(task: Task) {
+    override fun addEventFromTask(task: TaskDTO) {
         val millis = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             task.due?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
                 ?: System.currentTimeMillis()

@@ -5,16 +5,16 @@ import com.machinecode.smarttaskmanager.domain.*
 
 @Composable
 fun HomeScreen(
-    onRepoClick: (Task) -> Unit
+    onRepoClick: (TaskDTO) -> Unit
 ) {
 
-    HomeScreenContent(
-        repositories = List<Task>,
-        searchQuery = "",
-        onTypeSearchQuery = null,
-        onSearchClick = null,
-        onSortClick = null,
-        onRepoClick = onRepoClick,
-        listState = null
-    )
+//    HomeScreenContent(
+//        repositories = List<TaskDTO>,
+//        searchQuery = "",
+//        onTypeSearchQuery = "",
+//        onSearchClick = null,
+//        onSortClick = null,
+//        onRepoClick = onRepoClick,
+//        listState = null
+//    )
 }

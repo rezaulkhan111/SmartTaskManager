@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.machinecode.smarttaskmanager.data.TaskRepository
 import com.machinecode.smarttaskmanager.domain.SortByDeadline
-import com.machinecode.smarttaskmanager.domain.Task
+import com.machinecode.smarttaskmanager.domain.TaskDTO
 import com.machinecode.smarttaskmanager.domain.TaskFactory
 import com.machinecode.smarttaskmanager.domain.TaskSortStrategy
 import com.machinecode.smarttaskmanager.domain.TaskType
@@ -36,7 +36,7 @@ class TasksVM(
     // Combine with current sorting strategy and expose a sorted StateFlow
     // stateIn is used so Compose / UI can collect easily without launching a new coroutine.
     // -------------------------
-    val tasks: StateFlow<List<Task>> = combine(repo.tasks, _sortStrategy) { list, sorter ->
+    val tasks: StateFlow<List<TaskDTO>> = combine(repo.tasks, _sortStrategy) { list, sorter ->
         sorter.sort(list)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -64,14 +64,14 @@ class TasksVM(
     }
 
     /** Transition a task to its next 'start' state (State pattern). */
-    fun toInProgress(task: Task) = viewModelScope.launch {
+    fun toInProgress(task: TaskDTO) = viewModelScope.launch {
         val nextState = task.state.start()
         val updated = task.copy(state = nextState)
         repo.update(updated)
     }
 
     /** Mark a task complete (State) and push to calendar (Adapter). */
-    fun complete(task: Task) = viewModelScope.launch {
+    fun complete(task: TaskDTO) = viewModelScope.launch {
         val completedState = task.state.complete()
         val updated = task.copy(state = completedState)
         repo.update(updated)
@@ -84,19 +84,19 @@ class TasksVM(
     }
 
     /** Archive a task (State). */
-    fun archive(task: Task) = viewModelScope.launch {
+    fun archive(task: TaskDTO) = viewModelScope.launch {
         val archivedState = task.state.archive()
         val updated = task.copy(state = archivedState)
         repo.update(updated)
     }
 
     /** Remove a task from the repository. */
-    fun remove(task: Task) = viewModelScope.launch {
+    fun remove(task: TaskDTO) = viewModelScope.launch {
         repo.remove(task.id)
     }
 
     /** Generic update helper if you want to update arbitrary fields. */
-    fun updateTask(updated: Task) = viewModelScope.launch {
+    fun updateTask(updated: TaskDTO) = viewModelScope.launch {
         repo.update(updated)
     }
 }

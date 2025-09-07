@@ -35,7 +35,7 @@ sealed interface TaskState {
 enum class Priority { LOW, MEDIUM, HIGH }
 enum class Recurrence { NONE, DAILY, WEEKLY, MONTHLY }
 
-data class Task(
+data class TaskDTO(
     val id: String,
     val title: String,
     val description: String?,
@@ -62,7 +62,7 @@ class TaskBuilder(private val id: String, private val title: String) {
     fun recurrence(value: Recurrence) = apply { recurrence = value }
     fun state(value: TaskState) = apply { state = value }
 
-    fun build(): Task = Task(
+    fun build(): TaskDTO = TaskDTO(
         id = id,
         title = title,
         description = description,
@@ -76,17 +76,17 @@ class TaskBuilder(private val id: String, private val title: String) {
 
 // ----- Strategy Pattern -----
 interface TaskSortStrategy {
-    fun sort(input: List<Task>): List<Task>
+    fun sort(input: List<TaskDTO>): List<TaskDTO>
 }
 
 class SortByDeadline : TaskSortStrategy {
-    override fun sort(input: List<Task>) = input.sortedWith(compareBy(nullsLast()) { it.due })
+    override fun sort(input: List<TaskDTO>) = input.sortedWith(compareBy(nullsLast()) { it.due })
 }
 
 class SortByPriority : TaskSortStrategy {
-    override fun sort(input: List<Task>) = input.sortedByDescending { it.priority }
+    override fun sort(input: List<TaskDTO>) = input.sortedByDescending { it.priority }
 }
 
 class SortByTitle : TaskSortStrategy {
-    override fun sort(input: List<Task>) = input.sortedBy { it.title.lowercase() }
+    override fun sort(input: List<TaskDTO>) = input.sortedBy { it.title.lowercase() }
 }

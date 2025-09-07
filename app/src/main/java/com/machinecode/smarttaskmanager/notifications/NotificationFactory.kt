@@ -1,13 +1,14 @@
 package com.machinecode.smarttaskmanager.notifications
 
-import com.machinecode.smarttaskmanager.domain.Task
+import com.machinecode.smarttaskmanager.domain.TaskDTO
+
 
 interface Notifier {
-    fun notifyTask(task: Task, message: String)
+    fun notifyTask(task: TaskDTO, message: String)
 }
 
 interface ReminderScheduler {
-    fun schedule(task: Task)
+    fun schedule(task: TaskDTO)
 }
 
 interface NotificationFactory { // Abstract Factory
@@ -21,7 +22,7 @@ class AndroidNotificationFactory : NotificationFactory {
 }
 
 class AndroidNotifier : Notifier {
-    override fun notifyTask(task: Task, message: String) {
+    override fun notifyTask(task: TaskDTO, message: String) {
 // TODO: Hook into NotificationManager
         println("[AndroidNotifier] ${'$'}{task.title}: ${'$'}message")
     }
@@ -29,7 +30,7 @@ class AndroidNotifier : Notifier {
 
 
 class AndroidReminderScheduler : ReminderScheduler {
-    override fun schedule(task: Task) {
+    override fun schedule(task: TaskDTO) {
 // TODO: Use WorkManager for exact scheduling
         println("[AndroidReminder] Scheduled reminder for ${'$'}{task.title}")
     }
@@ -37,12 +38,12 @@ class AndroidReminderScheduler : ReminderScheduler {
 
 class NoopNotificationFactory : NotificationFactory {
     override fun createNotifier(): Notifier = object : Notifier {
-        override fun notifyTask(task: Task, message: String) { /* no-op */
+        override fun notifyTask(task: TaskDTO, message: String) { /* no-op */
         }
     }
 
     override fun createScheduler(): ReminderScheduler = object : ReminderScheduler {
-        override fun schedule(task: Task) { /* no-op */
+        override fun schedule(task: TaskDTO) { /* no-op */
         }
     }
 }

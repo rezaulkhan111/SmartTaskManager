@@ -12,7 +12,7 @@ sealed class TaskType {
 object TaskFactory {
 
     // Factory Method
-    fun create(type: TaskType): Task = when (type) {
+    fun create(type: TaskType): TaskDTO = when (type) {
         is TaskType.Simple -> TaskBuilder(id(), type.title).build()
         is TaskType.WithDeadline -> TaskBuilder(id(), type.title).due(type.due).build()
         is TaskType.Recurring -> TaskBuilder(id(), type.title).recurrence(type.recurrence).build()

@@ -18,95 +18,117 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.machinecode.smarttaskmanager.domain.Task
-import com.machinecode.smarttaskmanager.ui.components.TaskItemCard
+import com.machinecode.smarttaskmanager.domain.TaskDTO
+import com.machinecode.smarttaskmanager.presentation.ui.components.TaskItemCard
 
 
 @Composable
 fun HomeScreenContent(
-    repositories: List<Task>,
-    searchQuery: String,
-    onTypeSearchQuery: (String) -> Unit,
-    onSearchClick: () -> Unit,
-    onSortClick: () -> Unit,
-    onRepoClick: (Task) -> Unit,
-    listState: LazyListState
+
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onTypeSearchQuery,
+    val repositories: List<TaskDTO> = mutableListOf()
+    val searchQuery: String = ""
+    val onTypeSearchQuery: (String) -> Unit
+    val onSearchClick: () -> Unit
+    val onSortClick: () -> Unit
+    val onRepoClick: (TaskDTO) -> Unit
+    val listState: LazyListState = LazyListState()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(12.dp)
+    ) {
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
                 modifier = Modifier
-                    .testTag("ttSearchInput")
-                    .weight(1f)
-                    .height(56.dp),
-                placeholder = { Text("Search") },
-                singleLine = true,
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            IconButton(
-                modifier = Modifier.testTag("ttBtnSearch"), onClick = onSearchClick
+                    .padding(12.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = "Search",
-                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = {} /*onTypeSearchQuery*/,
+                    modifier = Modifier
+                        .testTag("ttSearchInput")
+                        .weight(1f)
+                        .height(56.dp),
+                    placeholder = { Text("Search") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
                 )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    modifier = Modifier.testTag("ttBtnSearch"),
+                    onClick = {} /*onSearchClick*/) {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = "Search",
+                        tint = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    )
+                }
+
+                IconButton(modifier = Modifier.testTag("ttBtnSort"), onClick = {} /*onSortClick*/) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.List,
+                        contentDescription = "Sort",
+                        tint = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    )
+                }
             }
 
-            IconButton(
-                modifier = Modifier.testTag("ttBtnSort"), onClick = onSortClick
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Default.List,
-                    contentDescription = "Sort",
-                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black
-                )
+            if (repositories.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No repositories found",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.testTag("ttEmptyStateText")
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.testTag("ttLcRepository"),
+                    state = listState,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(repositories) { repo ->
+                        TaskItemCard(repo, onClick = { onRepoClick(repo) })
+                    }
+                }
             }
         }
 
-        if (repositories.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No repositories found",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.testTag("ttEmptyStateText")
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.testTag("ttLcRepository"),
-                state = listState,
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(repositories) { repo ->
-                    TaskItemCard(repo, onClick = { onRepoClick(repo) })
-                }
-            }
+        FloatingActionButton(
+            onClick = {},
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add, contentDescription = "Add Task"
+            )
         }
     }
 }
