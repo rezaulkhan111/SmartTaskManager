@@ -23,16 +23,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskScreenContent(/*onSave: (String, LocalDate?) -> Unit,*/ onCancel: () -> Unit
+fun AddTaskScreenContent(
+    onSave: (String, LocalDateTime?) -> Unit,
+    onCancel: () -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
-    var dueDate by remember { mutableStateOf<LocalDate?>(null) }
+    var dueDate by remember { mutableStateOf<LocalDateTime?>(null) }
+
+    val focusManager = LocalFocusManager.current
+    val datePickerState = rememberDatePickerState()
 
     Column(
         modifier = Modifier
@@ -42,7 +52,7 @@ fun AddTaskScreenContent(/*onSave: (String, LocalDate?) -> Unit,*/ onCancel: () 
     ) {
         OutlinedTextField(
             value = title,
-            onValueChange = { title = it } /*onTypeSearchQuery*/,
+            onValueChange = { title = it },
             label = { Text("Task Title") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
@@ -50,37 +60,44 @@ fun AddTaskScreenContent(/*onSave: (String, LocalDate?) -> Unit,*/ onCancel: () 
         )
 
         OutlinedButton(onClick = { showDatePicker = true }) {
-            Text(dueDate?.toString() ?: "Select Due Date (Optional)")
+            val formattedDate = dueDate?.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+            Text(text = formattedDate ?: "Select Due Date (Optional)")
         }
 
         if (showDatePicker) {
-            DatePickerDialog(onDismissRequest = { showDatePicker = false }, confirmButton = {
-                TextButton(onClick = {
-                    showDatePicker = false
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        dueDate = datePickerState.selectedDateMillis?.let {
+                            Instant.ofEpochMilli(it)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
+                        }
+                        showDatePicker = false
+                    }) { Text("OK") }
+                }, dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancel")
+                    }
                 }) {
-                    Text("OK")
-                }
-            }, dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
-                }
-            }) {
                 DatePicker(
-                    state = rememberDatePickerState()
+                    state = datePickerState
                 )
             }
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
         ) {
-            TextButton(onClick = onCancel) {
-                Text("Cancel")
-            }
+            TextButton(onClick = onCancel) { Text("Cancel") }
             Spacer(Modifier.width(8.dp))
             Button(
-                onClick = { /*onSave(title, dueDate)*/ },
-                enabled = title.isNotBlank()
+                onClick = {
+                    focusManager.clearFocus()
+                    onSave(title, dueDate)
+                }, enabled = title.isNotBlank()
             ) {
                 Text("Save")
             }

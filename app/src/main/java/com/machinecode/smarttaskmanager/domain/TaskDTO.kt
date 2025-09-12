@@ -73,20 +73,3 @@ class TaskBuilder(private val id: String, private val title: String) {
         state = state
     )
 }
-
-// ----- Strategy Pattern -----
-interface TaskSortStrategy {
-    fun sort(input: List<TaskDTO>): List<TaskDTO>
-}
-
-class SortByDeadline : TaskSortStrategy {
-    override fun sort(input: List<TaskDTO>) = input.sortedWith(compareBy(nullsLast()) { it.due })
-}
-
-class SortByPriority : TaskSortStrategy {
-    override fun sort(input: List<TaskDTO>) = input.sortedByDescending { it.priority }
-}
-
-class SortByTitle : TaskSortStrategy {
-    override fun sort(input: List<TaskDTO>) = input.sortedBy { it.title.lowercase() }
-}

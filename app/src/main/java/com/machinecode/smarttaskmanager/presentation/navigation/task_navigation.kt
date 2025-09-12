@@ -6,6 +6,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.machinecode.smarttaskmanager.presentation.ui.screens.AddTaskScreen
+import com.machinecode.smarttaskmanager.presentation.ui.screens.AddTaskScreenContent
 import com.machinecode.smarttaskmanager.presentation.ui.screens.HomeScreen
 
 @Composable
@@ -14,17 +16,19 @@ fun NavHostScreen() {
     val navController = rememberNavController()
 
     NavHost(
-        navController = navController,
-        startDestination = "home_screen"
+        navController = navController, startDestination = "home_screen"
     ) {
         composable("home_screen") {
-            HomeScreen(onRepoClick = {})
+            HomeScreen(onAddTaskClick = {
+                navController.navigate("addTask_screen")
+            })
         }
 
-       /* composable("details_screen/{repoId}") { backStackEntry ->
-            val repoId = backStackEntry.arguments?.getString("repoId")
-            Log.e("MainAc", "NavHostScreen: " + Gson().toJson(repoId))
-            DetailsScreen(repoId = repoId)
-        }*/
+        composable("addTask_screen") { backStackEntry ->
+            AddTaskScreen(
+                onCancel = {
+                    navController.popBackStack()
+                })
+        }
     }
 }

@@ -1,20 +1,15 @@
 package com.machinecode.smarttaskmanager.presentation.ui.screens
 
 import androidx.compose.runtime.Composable
-import com.machinecode.smarttaskmanager.domain.*
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun HomeScreen(
-    onRepoClick: (TaskDTO) -> Unit
+    onAddTaskClick: () -> Unit
 ) {
+    val context = LocalContext.current
 
-//    HomeScreenContent(
-//        repositories = List<TaskDTO>,
-//        searchQuery = "",
-//        onTypeSearchQuery = "",
-//        onSearchClick = null,
-//        onSortClick = null,
-//        onRepoClick = onRepoClick,
-//        listState = null
-//    )
+    HomeScreenContent(
+        onAddTaskClick = onAddTaskClick,
+    )
 }

@@ -3,13 +3,16 @@ package com.machinecode.smarttaskmanager.presentation.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.machinecode.smarttaskmanager.data.TaskRepository
-import com.machinecode.smarttaskmanager.domain.SortByDeadline
 import com.machinecode.smarttaskmanager.domain.TaskDTO
 import com.machinecode.smarttaskmanager.domain.TaskFactory
-import com.machinecode.smarttaskmanager.domain.TaskSortStrategy
 import com.machinecode.smarttaskmanager.domain.TaskType
+import com.machinecode.smarttaskmanager.domain.strategy.SortByDeadline
+import com.machinecode.smarttaskmanager.domain.strategy.SortByPriority
+import com.machinecode.smarttaskmanager.domain.strategy.SortByTitle
+import com.machinecode.smarttaskmanager.domain.strategy.TaskSortStrategy
 import com.machinecode.smarttaskmanager.integrations.CalendarClient
 import com.machinecode.smarttaskmanager.notifications.NotificationFactory
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,28 +21,48 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class TasksVM(
+@HiltViewModel
+class TasksVM @Inject constructor(
     private val repo: TaskRepository,
     private val calendar: CalendarClient,
     private val notifications: NotificationFactory
 ) : ViewModel() {
 
+    val sortStrategies: List<TaskSortStrategy> = listOf(
+        SortByDeadline(), SortByPriority(), SortByTitle()
+    )
+
     // -------------------------
     // Strategy: current sort strategy (mutable at runtime)
     // -------------------------
     private val _sortStrategy = MutableStateFlow<TaskSortStrategy>(SortByDeadline())
-    val sortStrategy: StateFlow<TaskSortStrategy> = _sortStrategy.asStateFlow()
+    val selectedStrategy: StateFlow<TaskSortStrategy> = _sortStrategy.asStateFlow()
+
+    // -----------------------------
+    // Search Query State
+    // -----------------------------
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     // -------------------------
     // Observer: tasks stream exposed to UI (repo.tasks is a StateFlow)
     // Combine with current sorting strategy and expose a sorted StateFlow
     // stateIn is used so Compose / UI can collect easily without launching a new coroutine.
     // -------------------------
-    val tasks: StateFlow<List<TaskDTO>> = combine(repo.tasks, _sortStrategy) { list, sorter ->
-        sorter.sort(list)
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    val lsTask: StateFlow<List<TaskDTO>> =
+        combine(repo.tasks, _sortStrategy, _searchQuery) { lsTask, sorter, searchQuery ->
+            val filtered = if (searchQuery.isBlank()) lsTask
+            else lsTask.filter { it.title.contains(searchQuery, ignoreCase = true) }
 
+            sorter.sort(input = filtered)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
 
     /** Change the active sorting strategy (Strategy pattern). */
     fun setSortStrategy(strategy: TaskSortStrategy) {

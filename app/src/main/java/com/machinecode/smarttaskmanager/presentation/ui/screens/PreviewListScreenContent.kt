@@ -8,7 +8,11 @@ import com.machinecode.smarttaskmanager.presentation.ui.theme.SmartTaskManagerTh
 @Composable
 fun PreviewListScreenContent() {
     SmartTaskManagerTheme {
-//        AddTaskScreenContent(onCancel = {})
-        HomeScreenContent()
+//        AddTaskScreenContent(onCancel = {}, onSave = { title, mTime ->
+//            {
+//
+//            }
+//        })
+        HomeScreen(onAddTaskClick = {})
     }
 }
